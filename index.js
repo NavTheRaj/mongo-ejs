@@ -10,6 +10,7 @@ app.set("view engine", "ejs");
 
 //Schema
 var imgSchema = mongoose.Schema({
+  title: String,
   img: { data: Buffer, contentType: String },
 });
 
@@ -31,21 +32,22 @@ app.get("/", (req, res) => {
   res.render("index");
 });
 
-app.get("/show", (req, res) => {
-  image.find().toArray(function (err, result) {
-    const imgArray = result.map((element) => element._id);
-    console.log(imgArray);
-    if (err) {
-      return console.error(err);
-    }
-    res.send(imgArray);
-  });
+app.get("/show", async (req, res) => {
+  // const cursor = image.find().cursor();
+
+  for await (const doc of image.find()) {
+    console.log(doc.title);
+  }
+
+  res.send("Look at your console");
 });
 
 app.post("/uploadphoto", upload.single("myImage"), (req, res) => {
+  var title = req.body.title;
   var img = fs.readFileSync(req.file.path);
   var encode_img = img.toString("base64");
   var final_img = {
+    title: title,
     contentType: req.file.mimetype,
     image: new Buffer(encode_img, "base64"),
   };
@@ -53,7 +55,7 @@ app.post("/uploadphoto", upload.single("myImage"), (req, res) => {
     if (err) {
       console.log(err);
     } else {
-      console.log(result.img.Buffer);
+      // console.log(result.img.Buffer);
       console.log("Saved To database");
       res.contentType(final_img.contentType);
       res.send(final_img.image);
