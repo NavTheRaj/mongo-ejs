@@ -10,11 +10,9 @@ app.set("view engine", "ejs");
 
 //Schema
 var imgSchema = mongoose.Schema({
-  title: String,
   img: { data: Buffer, contentType: String },
 });
 
-// var title = mongoose.model("title", imgSchema);
 var image = mongoose.model("image", imgSchema);
 
 // SET STORAGE
